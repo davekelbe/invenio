@@ -1,0 +1,215 @@
+#------------------------------------------------------------------------------
+# File:         ExifTool_config  -->  ~/.ExifTool_config
+#
+# Description:  Sample user configuration file for Image::ExifTool
+#
+# Notes:        This example file shows how to define your own shortcuts and
+#               add new EXIF, IPTC, XMP, PNG, MIE and Composite tags, as well
+#               as how to specify preferred lenses for the LensID tag and
+#               define default values for ExifTool options.
+#
+#               Note that unknown tags may be extracted even if they aren't
+#               defined, but tags must be defined to be written.  Also note
+#               that it is possible to override an existing tag definition
+#               with a user-defined tag.
+#
+#               To activate this file, rename it to ".ExifTool_config" and
+#               place it in your home directory or the exiftool application
+#               directory.  (On Windows and Mac systems this must be done via
+#               the command line since the GUI's don't allow filenames to begin
+#               with a dot.  Use the "rename" command in Windows or "mv" on the
+#               Mac.)  This causes ExifTool to automatically load the file when
+#               run.  Your home directory is determined by the first defined of
+#               the following environment variables:
+#
+#                   1. EXIFTOOL_HOME
+#                   2. HOME
+#                   3. HOMEDRIVE + HOMEPATH
+#                   4. (the current directory)
+#
+#               Alternatively, the -config option of the exiftool application
+#               may be used to load a specific configuration file (note that
+#               it must be the first option on the command line):
+#
+#                   exiftool -config ExifTool_config ...
+#
+#               This sample file defines the following 16 new tags as well as a
+#               number of Shortcut and Composite tags:
+#
+#                   1.  EXIF:NewEXIFTag
+#                   2.  GPS:GPSPitch
+#                   3.  GPS:GPSRoll
+#                   4.  IPTC:NewIPTCTag
+#                   5.  XMP-xmp:NewXMPxmpTag
+#                   6.  XMP-exif:GPSPitch
+#                   7.  XMP-exif:GPSRoll
+#                   8.  XMP-xxx:NewXMPxxxTag1
+#                   9.  XMP-xxx:NewXMPxxxTag2
+#                  10.  XMP-xxx:NewXMPxxxTag3
+#                  11.  XMP-xxx:NewXMPxxxStruct
+#                  12.  PNG:NewPngTag1
+#                  13.  PNG:NewPngTag2
+#                  14.  PNG:NewPngTag3
+#                  15.  MIE-Meta:NewMieTag1
+#                  16.  MIE-Test:NewMieTag2
+#
+#               For detailed information on the definition of tag tables and
+#               tag information hashes, see lib/Image/ExifTool/README.
+#------------------------------------------------------------------------------
+
+# Shortcut tags are used when extracting information to simplify
+# commonly used commands.  They can be used to represent groups
+# of tags, or to provide an alias for a tag name.
+# %Image::ExifTool::UserDefined::Shortcuts = (
+#     MyShortcut => ['exif:createdate','exposuretime','aperture'],
+#     MyAlias => 'FocalLengthIn35mmFormat',
+# );
+
+# The %Image::ExifTool::UserDefined hash defines new tags to be added
+# to existing tables.
+%Image::ExifTool::UserDefined = (
+    # All EXIF tags are added to the Main table, and WriteGroup is used to
+    # specify where the tag is written (default is ExifIFD if not specified):
+    # new XMP namespaces (ie. xxx) must be added to the Main XMP table:
+    'Image::ExifTool::XMP::Main' => {
+        ap => { # <-- must be the same as the NAMESPACE prefix
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::UserDefined::ap',
+                # (see the definition of this table below)
+            },
+        },
+        # add more user-defined XMP namespaces here...
+    },
+);
+
+%Image::ExifTool::UserDefined::ap = (
+  GROUPS        => { 0 => 'XMP', 1 => 'XMP-ap', 2 => 'Image' },
+  NAMESPACE     => { 'ap' => 'http://archimedespalimpsest.org/ns/1.0/' },
+  WRITABLE      => 'string',
+  ID_File_Name => { },
+  ID_Parent_File	=> { List => 'Bag' },
+  SPTL_Coordinate_Unit_Of_Measure => { },
+  SPTL_X_Resolution	 => { Writable => 'real' },
+  SPTL_Y_Resolution	 => { Writable => 'real' },
+  SPTL_X_Resolution_Unit_Of_Measure => { },
+  SPTL_Y_Resolution_Unit_Of_Measure => { },
+  SPTL_UpLeft_X_Coordinate	 => { Writable => 'integer' },
+  SPTL_UpLeft_Y_Coordinate	 => { Writable => 'integer' },
+  SPTL_LoRight_X_Coordinate	 => { Writable => 'integer' },
+  SPTL_LoRight_Y_Coordinate	 => { Writable => 'integer' },
+  SPTL_UpLeft_X_BoundingCoordinate	 => { Writable => 'integer' },
+  SPTL_UpLeft_Y_BoundingCoordinate	 => { Writable => 'integer' },
+  SPTL_LoRight_X_BoundingCoordinate	 => { Writable => 'integer' },
+  SPTL_LoRight_Y_BoundingCoordinate	 => { Writable => 'integer' },
+  SPTL_Grid_Coordinate_System	 => { Writable => 'integer' },
+  SPTL_X_Offset_Upper_Left	 => { Writable => 'integer' },
+  SPTL_Y_Offset_Upper_Left	 => { Writable => 'integer' },
+  SPTL_X_Posn_Accuracy => { },
+  SPTL_Y_Posn_Accuracy => { },
+  SPTL_Delta_X => { },
+  SPTL_Delta_Y => { },
+  SPTL_Count_Horizontal_Regions_on_Folio	 => { Writable => 'integer' },
+  SPTL_Count_Vertical_Regions_on_Folio	 => { Writable => 'integer' },
+  SPTL_Position_Number_Folio_Region => { },
+  SPTL_Count_Total_Regions_on_Folio => { },
+  IMG_Spectral_Range => { },
+  IMG_Spectral_Range_Unit_Of_Measure => { },
+  IMG_Illumination_Filters => { List => 'Bag' },
+  IMG_Acquisition_Filters => { List => 'Bag' },
+  IMG_Imaging_System => { },
+  IMG_Lens_Brand => { },
+  IMG_Sensor_Spectral_Range => { },
+  IMG_Sensor_Spectral_Range_Measurement_Unit => { },
+  IMG_Camera_Incidence_Angle_Deg	 => { Writable => 'integer' },
+  IMG_Camera_Imaging_Mode => { },
+  IMG_Camera_Imaging_Depth_bits	 => { Writable => 'integer' },
+  IMG_Illumination_Wavelength_Meas_Unit => { },
+  IMG_Illumination_Source_Wattage	 => { Writable => 'real' },
+  IMG_Illumination_Type => { },
+  IMG_Illumination_Wavelength	 => { Writable => 'integer' },
+  IMG_Illumination_Spectral_Range => { },
+  IMG_Illumination_Spectral_Range_Measurement_Unit => { },
+  IMG_White_Balance => { },
+  IMG_Illumination_Source_No	 => { Writable => 'integer' },
+  IMG_Comment => { },
+  IMG_Illumination_Comment => { },
+  DAT_Format_Version_Number	=> { },
+  DAT_Format_Version_Date	=> { Writable => 'date' },
+  DAT_Decompression_Technique => { },
+  DAT_File_Size	 => { Writable => 'integer' },
+  DAT_File_Processing => { },
+  DAT_Joining_Same_Parts_of_Folio	 => { Writable => 'boolean' },
+  DAT_Joining_Different_Parts_Of_Folio	 => { Writable => 'boolean' },
+  DAT_Type_of_Contrast_Adjustment => { },
+  DAT_Type_of_Image_Processing => { },
+ 	DAT_Bits_Per_Sample => { },
+ 	DAT_Samples_Per_Pixel => { },
+  DAT_Software_Version	=> {},
+  DAT_Processing_Program => { List => 'Seq' },
+  DAT_Processing_Comments => { },
+  DAT_File_Processing_Rotation	 => { Writable => 'integer' },
+  CONT_Content_Keyword	=> { List => 'Bag' },
+  CONT_Source_Info => { },
+  CONT_Foliation_Scheme => { },
+  CONT_Folio => { List => 'Bag' },
+  CONT_Source_Citation => { },
+  MET_Metadata_Status	=> { },
+  MET_Metadata_Date => { Writable => 'date' },
+  MET_Review_Date => { Writable => 'date' },
+  MET_Future_Review_Date => { Writable => 'date' },
+  MET_Metadata_Contact => { List => 'Bag' },
+  MET_Standard_Name => { },
+  MET_Standard_Version => { },
+  MET_Extensions => { },
+);
+
+# This is a basic example of the definition for a new XMP namespace.
+# This table is referenced through a SubDirectory tag definition
+# in the %Image::ExifTool::UserDefined definition above.
+# The namespace prefix for these tags is 'x', which corresponds to
+# an ExifTool family 1 group name of 'XMP-xxx'.
+# %Image::ExifTool::UserDefined::xxx = (
+#     GROUPS        => { 0 => 'XMP', 1 => 'XMP-xxx', 2 => 'Image' },
+#     NAMESPACE     => { 'xxx' => 'http://ns.myname.com/xxx/1.0/' },
+#     WRITABLE      => 'string',
+#     # replace "NewXMPxxxTag1" with your own tag name (ie. "MyTag")
+#     NewXMPxxxTag1 => { Writable => 'lang-alt' },
+#     NewXMPxxxTag2 => { Groups => { 2 => 'Author' } },
+#     NewXMPxxxTag3 => { List => 'Bag' },
+#     # example structured XMP tag
+#     NewXMPxxxStruct => {
+#         # the "Struct" entry defines the structure fields
+#         Struct => {
+#             # optional namespace prefix and URI for structure fields
+#             # (required only if different than NAMESPACE above)
+#             NAMESPACE => { 'test' => 'http://x.y.z/test/' },
+#             # optional structure name (used for warning messages only)
+#             STRUCT_NAME => 'MyStruct',
+#             # optional rdf:type property for the structure
+#             TYPE => 'http://x.y.z/test/xystruct',
+#             # structure field definitions (very similar to tag definitions)
+#             X => { Writable => 'integer' },
+#             Y => { Writable => 'integer' },
+#             # a nested structure...
+#             Things => {
+#                 List => 'Bag',
+#                 Struct => {
+#                     NAMESPACE => { thing => 'http://x.y.z/thing/' },
+#                     What  => { },
+#                     Where => { },
+#                 },
+#             },
+#         },
+#         List => 'Seq', # structures may also be elements of a list
+#     },
+#     # Each field in the structure has an automatically-generated
+#     # corresponding flattened tag with an ID that is the concatenation
+#     # of the original structure tag ID and the field name (after
+#     # capitalizing the first letter of the field name if necessary).
+#     # The Name and/or Description of these flattened tags may be changed
+#     # if desired, but all other tag properties are taken from the
+#     # structure field definition.  When this is done, the "Flat" flag
+#     # must also be set in the tag definition.  For example:
+#     NewXMPxxxStructX => { Name => 'SomeOtherName', Flat => 1 },
+# );
+
