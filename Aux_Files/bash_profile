@@ -1,0 +1,11 @@
+echo “~/.bash_profile sourced”
+
+########################################################################
+# update path 
+########################################################################
+
+PATH=$PATH:${HOME}/bin
+export PATH
+
+PATH=$PATH:${HOME}/dev/spindle/bin
+export PATH
