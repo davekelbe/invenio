@@ -2,6 +2,6 @@
 
 invenio is an image processing toolbox for recovering erased writing from ancient documents 
 
-invenio stands for image visualization and enhancement for new insight and opportunity
+invenio stands for Image Visualization and Enhancement for New Insight and Opportunity
 
 invenio is written in Matlab/IDL/ENVI.
