@@ -72,7 +72,7 @@ switch user
         default.excelpath = 'C:\Users\rlepci\Documents\Research\StC\Submission\Log\';
     case 'dave'
         slash = '/';
-        exiftoolcall = '/usr/bin/exiftool';
+        exiftoolcall = 'exiftool';
         rmcall = 'rm';
         cpcall = 'cp';
         info.Creator = 'Dave Kelbe';
@@ -171,7 +171,7 @@ for f = 1:size(folders,2)
     h = figure('name','Please choose spectralon');
     
     imagesc(I1);
-    colormap jet 
+    colormap parula 
     hFH = imrect();
     % Create a binary image ("mask") from the ROI object.
     mask = hFH.createMask();

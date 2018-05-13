@@ -77,14 +77,14 @@ fprintf('Folios to process: \n');
     
     n.b = size(files,2);
     
-    for b = 1:n.b
+    for b = 1:n.b;
         fprintf('\nWorking on %g of %g\n', b, n.b);
         I = imread(sprintf('%s%s',files{b}));
-        I = imrotate(I,-90); %90 = rotate left (counter clockwise) 
+        I = imrotate(I,180); %90 = rotate left (counter clockwise) 
         outfilename.jpeg = sprintf('%s.jpg',files{b}(1:end-4));
         outfilename.tif = sprintf('%s.tif',files{b}(1:end-4));
         if strcmp(files{b}(end-2:end),'jpg')
-            imwrite(I,outfilename.jpeg,'jpeg','Quality', 50);
+            imwrite(I,outfilename.jpeg,'jpeg','Quality', 100);
         elseif strcmp(files{b}(end-2:end),'tif')
            % imwrite(I,outfilename.tif,'tif');
             imwrite2tif(I, [], outfilename.tif, 'uint16');

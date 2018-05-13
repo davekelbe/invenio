@@ -66,19 +66,19 @@ else isunix();
     info_slash = '/';
     info_root = '/';
     info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
+    exiftoolcall = 'exiftool';
 end
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+if ispc();
+    command = sprintf(exiftoolcall);
+else isunix();
+    command = sprintf('which %s', exiftoolcall);
+end
+
+[exiftf,~] = system(command);
+if exiftf;
+    error('Please install Exiftool');
+end
 
 % Add Matlab directory to path (?)
 % addpath
@@ -148,7 +148,7 @@ for m = 1:n_m;
         filepath_F_tiff = sprintf('%s%s%s%s+tiff%s%s',m_path_upper{m},D{d},info_slash,D{d},info_slash,F{f});
 
         if ~exist(filepath_F_jpg, 'file');
-            I = imread(filepath_F_tiff, 'tif');
+            I = imread(filepath_F_tiff);
             J = imresize(I,.4);
             iminfo = imfinfo(filepath_F_tiff);
             bitdepth = iminfo.BitsPerSample(1);

@@ -58,7 +58,6 @@ fprintf('            Close log.csv file before continuing \n');
 %user = 'dave';
 %user = 'roger';
 
-
 %% Set default paths
 %{
 %current_path = cd;
@@ -130,19 +129,19 @@ else isunix();
     info_slash = '/';
     info_root = '/';
     info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
+    exiftoolcall = 'exiftool';
 end
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+if ispc();
+    command = sprintf(exiftoolcall);
+else isunix();
+    command = sprintf('which %s', exiftoolcall);
+end
+
+[exiftf,~] = system(command);
+if exiftf;
+    error('Please install Exiftool');
+end
 
 % Add Matlab directory to path (?)
 % addpath
@@ -171,29 +170,14 @@ if ~exist(path_source_previous, 'dir');
     path_source_previous = info_root;
 end
 
-% Determine preferences file
-filepath_preferences = sprintf('%sEMEL_preferences.txt', ...
-    path_matlab);
-if exist(filepath_preferences, 'file');
-    mypreferences = parse_EMEL_preferences(filepath_preferences);
-else
-    mypreferences = [];
-end
 
 
-if isfield(mypreferences, 'Creator');
-    info.Creator = mypreferences.Creator;
-else
-    info.Creator = inputdlg('Please enter your name');
-    info.Creator = info.Creator{1};
-end
-if isfield(mypreferences, 'initials');
-    processor = mypreferences.initials;
-else
-    processor = inputdlg('Please enter initials');
-    processor = processor{1};
-end
-
+%past_source_previous = info_slash;
+info.Creator = inputdlg('Please enter your name');
+info.Creator = info.Creator{1};
+processor = inputdlg('Please enter initials');
+%processor = 'DJK';
+processor = processor{1};
 titlestr = sprintf('Please choose folder of Flattened images, e.g., /Users/Kelbe/Desktop/Flattened/, \n which has the subdirectories:\n 0061_000001\n 0061_000002\n ...\n 0061_000045\n');
 default.parentpath = uigetdir(path_source_previous, titlestr );
 if ~strcmp(default.parentpath, info_slash);
@@ -270,39 +254,7 @@ end
 %command = sprintf('mkdir %s', path_deliver);
 %[~,~] = system(command);
 
-if isfield(mypreferences, 'cubelist');
-    if mypreferences.cubelist;
-        % locate cube file
-        % Determine target directory
-        filepath_workspace_previous = sprintf('%spath_workspace_previous.txt', ...
-            path_matlab);
-        if exist(filepath_workspace_previous, 'file');
-            fid = fopen(filepath_workspace_previous);
-            path_workspace_previous = textscan(fid, '%s', 'delimiter', '\t');
-            path_workspace_previous = char(path_workspace_previous{1});
-            ix_slash = strfind(path_workspace_previous, info_slash);
-           % path_workspace_previous_upper = path_workspace_previous(1:ix_slash(end-1));
-        else
-            path_workspace_previous = info_root;
-          %  path_workspace_previous_upper = info_root;
-        end
-        % Change source directory if no longer exists (e.g. drive removed)
-        if ~exist(path_workspace_previous, 'dir');
-            path_workspace_previous = info_root;
-        end
-        path_workspace = uigetdir(path_workspace_previous,'Please choose workspace path (containing "Processed-0076, etc."');
-        path_workspace = char(path_workspace);
-        if ~strcmp(path_workspace(end), info_slash);
-            path_workspace = sprintf('%s%s',path_workspace, info_slash);
-        end        
-        % Update target directory
-        fid = fopen(filepath_workspace_previous, 'w+');
-        fprintf(fid, '%s', path_workspace);
-        fclose(fid);
-    else
-        mypreferences.cubelist = false;
-    end
-end
+
 
 if iscell(SourceFiles);
     n_source = numel(SourceFiles);
@@ -318,14 +270,10 @@ for s = 1:n_source;
         SourceFile = SourceFiles;
     end
     
-    
-
-
     % Read cube file
-    
     %path_cubelist = '/Users/Kelbe/Desktop/EMEL/Processed/cube/';
     %filename_cubelist = 'cube.txt';
-    % IF best files are not moved into "best" folder
+    
     ix_slash = strfind(source_path, info_slash);
     name = source_path(ix_slash(end-2)+1:ix_slash(end-1)-1);
     dir_matlab = sprintf('%smatlab%s',source_path(1:end-5), info_slash);
@@ -340,34 +288,17 @@ for s = 1:n_source;
         is_cubelist = false;
     end
     
-    % if best files are moved to "best" folder
-    ix_underscore = strfind(SourceFile, '_');
-    mss = SourceFile(1:ix_underscore(1)-1);
-    mss_folio = SourceFile(1:ix_underscore(2)-1);
-    filepath_cubelist = sprintf('%sProcessed-%s%s%s%s%s+matlab%s%s_cube.txt', path_workspace, mss, info_slash, mss_folio, info_slash, mss_folio, info_slash, mss_folio );
-    if exist(filepath_cubelist, 'file');
-        cubelist = parse_cubelist(filepath_cubelist);
-        is_cubelist = true;
-        name = mss_folio;
-    else
-        is_cubelist = false;
-    end
-    
-    
-    
     
     % Get Processing type
     if ~isempty(strfind(SourceFile,'true'))
         type = 'true'; %SourceFile(end-8:end-4);
     elseif  ~isempty(strfind(SourceFile,'3band'))
         type = '3band';
-    elseif  ~isempty(strfind(SourceFile,'2band'))
-        type = '2band';
     else
         type = 'other';
     end
     
-    
+    %
     % Get bands used
     wavelength_all = [];
     if ~isempty(strfind(type, 'true'));
@@ -554,22 +485,11 @@ parentpath = default.parentpath;% Roger
     parentpath = sprintf('%s%s%s', parentpath, name, info_slash);
     %bands = [2 5 7];
     parentfile = cell(1,n_bands);
-    nskip = 0;
     for b = 1:n_bands;
         cd(parentpath);
         D = dir(sprintf('*%s*',wavelength_all{b}));
-        if isempty(D);
-             nskip = nskip + 1;
-             n_bands = n_bands - 1;
-           continue
-        end
-        if numel(D) > 1;
-            D = D(2);
-        end
-        parentfile{b-nskip} = D.name;
+        parentfile{b} = D.name;
     end
-    
-    parentfile = parentfile(1:n_bands);
     
     % Print output
     fprintf('\n***********************************************************\n');

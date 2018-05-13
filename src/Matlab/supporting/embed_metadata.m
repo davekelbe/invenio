@@ -55,45 +55,44 @@ fprintf('            *PLEASE change default paths in source code (line 57-60)\n'
 fprintf('            Change default metadata parameters in source code (line 158-174)\n');
 fprintf('            Close log.csv file before continuing \n');
 %% Set User
-%user = 'dave';
+user = 'dave';
 %user = 'roger';
 
 %% Set default paths
-%{
 %current_path = cd;
 %current_path = sprintf('%s/',current_path);
 % Change default paths here
-% switch user
-%     case 'roger'
-%      %   info_slash = '\';
-%      %   exiftoolcall = 'exiftool.pl';
-%      %   rmcall = 'del';
-%         default.processing_type = 'PCA';
-%         info.Creator = 'Roger Easton';
-%         info.Contributor = 'Dave Kelbe';
-%         default.source_path = 'g:\research\StC\';
-%         default.parentpath = 'g:\research\StC\';
-%         default.outdir = 'C:\Users\rlepci\Documents\Research\StC\Submission\Images\';
-%         default.excelpath = 'C:\Users\rlepci\Documents\Research\StC\Submission\Log\';
-%     case 'dave'
-%        % info_slash = '/';
-%        % exiftoolcall = 'exiftool';
-%        %  rmcall = 'rm';
-%       %  cpcall = 'cp';
-%         default.processing_type = 'ICA';
-%         %info.Creator = 'Dave Kelbe';
-%         %info.Contributor = 'Dave Kelbe';
-%         %default.source_path = '/Volumes/Tarsus/Processed/';
-%         default.source_path = '/Users/Kelbe/Desktop/Processed-0065/';
-%         %default.parentpath = '/Volumes/EnGedi/Summer/Capture/FLATTENED/';
-%         %default.parentpath = '/Users/Kelbe/Desktop/Flattened/';
-%         % default.parentpath = '/Volumes/Babel/2013-05/';
-%         %'/Volumes/cyclone.cis.rit.edu - -dirs-grad-djk2312/other/data/Flattened_Images/2011-12';
-%         %default.outdir =  '/Users/Kelbe/Desktop/DJK-2015-10-02-Delivery-01/';
-%         default.excelpath = '/Users/Kelbe/Documents/EMEL/Sinai/Processed/Log/';
-%         % default.parentpath = '/Users/Kelbe/Desktop/Flattened/';
-% end
-%}
+switch user
+    case 'roger'
+        info_slash = '\';
+        exiftoolcall = 'exiftool.pl';
+        rmcall = 'del';
+        default.processing_type = 'PCA';
+        info.Creator = 'Roger Easton';
+        info.Contributor = 'Dave Kelbe';
+        default.source_path = 'g:\research\StC\';
+        default.parentpath = 'g:\research\StC\';
+        default.outdir = 'C:\Users\rlepci\Documents\Research\StC\Submission\Images\';
+        default.excelpath = 'C:\Users\rlepci\Documents\Research\StC\Submission\Log\';
+    case 'dave'
+        info_slash = '/';
+        exiftoolcall = 'exiftool';
+        rmcall = 'rm';
+        cpcall = 'cp';
+        default.processing_type = 'ICA';
+        %info.Creator = 'Dave Kelbe';
+        %info.Contributor = 'Dave Kelbe';
+        %default.source_path = '/Volumes/Tarsus/Processed/';
+        default.source_path = '/Users/Kelbe/Desktop/Processed-0065/';
+        %default.parentpath = '/Volumes/EnGedi/Summer/Capture/FLATTENED/';
+        %default.parentpath = '/Users/Kelbe/Desktop/Flattened/';
+        % default.parentpath = '/Volumes/Babel/2013-05/';
+        %'/Volumes/cyclone.cis.rit.edu - -dirs-grad-djk2312/other/data/Flattened_Images/2011-12';
+        %default.outdir =  '/Users/Kelbe/Desktop/DJK-2015-10-02-Delivery-01/';
+        default.excelpath = '/Users/Kelbe/Documents/EMEL/Sinai/Processed/Log/';
+        % default.parentpath = '/Users/Kelbe/Desktop/Flattened/';
+end
+
 fprintf('\n***********************************************************\n');
 %fprintf('Setting Default Paths \n');
 %fprintf('Source:     %s\n',default.source_path);
@@ -129,19 +128,19 @@ else isunix();
     info_slash = '/';
     info_root = '/';
     info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
+    exiftoolcall = 'exiftool';
 end
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+if ispc();
+    command = sprintf(exiftoolcall);
+else isunix();
+    command = sprintf('which %s', exiftoolcall);
+end
+
+[exiftf,~] = system(command);
+if exiftf;
+    error('Please install Exiftool');
+end
 
 % Add Matlab directory to path (?)
 % addpath
@@ -176,7 +175,6 @@ end
 info.Creator = inputdlg('Please enter your name');
 info.Creator = info.Creator{1};
 processor = inputdlg('Please enter initials');
-%processor = 'DJK';
 processor = processor{1};
 default.parentpath = uigetdir(path_source_previous, 'Please choose folder of Flattened images, e.g., /Users/Kelbe/Desktop/Flattened/');
 if ~strcmp(default.parentpath, info_slash);
@@ -239,10 +237,9 @@ tstr = date;
 path_deliver = sprintf('%s%s_%s_%s%s',outdir_up,'Ingest',processor, tstr,info_slash);
 path_deliver_data = sprintf('%s%s', path_deliver, 'data');
 outdir = path_deliver_data; 
-if ~strcmp(outdir(end), info_slash);
+if ~strcmp(outdir, info_slash);
     outdir = sprintf('%s%s', outdir, info_slash);
 end
-path_deliver_data = outdir;
 
 if ~exist(path_deliver,'dir');
     mkdir(path_deliver);
@@ -276,29 +273,16 @@ for s = 1:n_source;
     
     ix_slash = strfind(source_path, info_slash);
     name = source_path(ix_slash(end-2)+1:ix_slash(end-1)-1);
-    dir_matlab = sprintf('%smatlab%s',source_path(1:end-5), info_slash);
+    dir_matlab = sprintf('%smatlab%s',source_path(1:end-4), info_slash);
     % if ~exist(dir_matlab, 'dir')
     %         dir_matlab = sprintf('%s+matlab%s',source_path(1:end-5), info_slash);
     % end
     filepath_cubelist = sprintf('%s%s_cube.txt', dir_matlab, name);
     cubelist = parse_cubelist(filepath_cubelist);
     
-    % Get Processing type
-    if ~isempty(strfind(SourceFile,'true'))
-        type = 'true'; %SourceFile(end-8:end-4);
-    else 
-        type = '3band';
-    end    
     
     %
     % Get bands used
-    wavelength_all = [];
-if ~isempty(strfind(type, 'true'));
-            wavelength_all{1} = '+MB455RB';
-            wavelength_all{2} = '+MB535Gr';
-            wavelength_all{3} = '+MB625Rd'; %#ok<AGROW>
-else
-            
     ix = strfind(SourceFile, 'c');
     n_ix = numel(ix);
     if n_ix;
@@ -320,7 +304,6 @@ else
     else
         %    bands = [2 5 7];
     end
-end
     
     % Bands no longer used
     
@@ -331,18 +314,6 @@ end
         wavelength_all = [wavelength_all; '+WBUVO22']; %#ok<AGROW>
         wavelength_all = [wavelength_all; '+WBUVR25']; %#ok<AGROW>
     end
-    
-    if sum(~cellfun(@isempty,strfind(wavelength_all, 'sharpie'))) && ...
-            sum(~cellfun(@isempty,strfind(wavelength_all, 'KTK')))
-        wavelength_all = [wavelength_all; '+MB365UV']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+WBUVB47']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+WBUVG58']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+WBUVO22']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+WBUVUVP']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+WBUVUVb']; %#ok<AGROW>
-        wavelength_all = [wavelength_all; '+MB780IR']; %#ok<AGROW>
-    end
-    
     if sum(~cellfun(@isempty,strfind(wavelength_all, 'MB780IR'))) && ...
             sum(~cellfun(@isempty,strfind(wavelength_all, 'KTK')))
         wavelength_all = [wavelength_all; '+MB780IR']; %#ok<AGROW>
@@ -372,14 +343,11 @@ end
     % Remove number and F
     for w = 1:n_bands;
         ix_underscore = strfind(wavelength_all{w}, '_');
-        if ~isempty(ix_underscore)
-            wavelength_all{w} = wavelength_all{w}(1:ix_underscore(1)-1);
-        end
+        wavelength_all{w} = wavelength_all{w}(1:ix_underscore(1)-1);
     end
-    wavelength_all = unique(wavelength_all);%, 'rows');
-    n_bands = numel(wavelength_all);
-
-
+    
+    % Get Processing type
+    type = '3band'; %SourceFile(end-8:end-4);
     filepath_I = sprintf('%s%s',source_path, SourceFile);
     iminfo = imfinfo(filepath_I);
     if iminfo.SamplesPerPixel==1;
@@ -396,7 +364,7 @@ end
     elseif strcmp(type, '3band');
         info.DAT_File_Processing = sprintf('RGB image created from ICA bands. Hue and levels adjustment in Photoshop.\n');%sprintf('%s',SourceFile);
         processing_type = 'ICA_3band';
-    elseif strcmp(type, 'true');
+    elseif strcmp(type, '_true');
         info.DAT_File_Processing = sprintf('Natural color image with contrast enhancement via Spectralon.\n');%sprintf('%s',SourceFile);
         processing_type = 'color';
     end
@@ -600,9 +568,8 @@ parentpath = default.parentpath;% Roger
     fprintf('Creating output filename\n');
     
     % Get shoot list and shot sequence
-    ix_delim = strfind(info.Source, options_delimiter);
-    shoot_list = info.Source(1:ix_delim-1);
-    shot_sequence = info.Source(ix_delim+1:end);
+    shoot_list = info.Source(1:4);
+    shot_sequence = info.Source(6:11);
     
     % Get initials of creator
     %     if ~(strcmp(info.Creator,'Dave Kelbe') ||...

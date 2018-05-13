@@ -74,19 +74,19 @@ else isunix();
     info_slash = '/';
     info_root = '/';
     info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
+    exiftoolcall = 'exiftool';
 end
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+if ispc();
+    command = sprintf(exiftoolcall);
+else isunix();
+    command = sprintf('which %s', exiftoolcall);
+end
+
+[exiftf,~] = system(command);
+if exiftf;
+    error('Please install Exiftool');
+end
 
 % Add Matlab directory to path (?)
 % addpath

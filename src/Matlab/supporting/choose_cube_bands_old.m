@@ -1,41 +1,6 @@
 % Add to cube text file 
 
-m_path_upper = aux.m_path_upper;
-m_folio = aux.m_folio;
-m_mss = aux.m_mss;
-m_name = aux.m_name;
-%m_wavelength_file_new = aux.m_wavelength_file_new;
-is_band_subset = aux.is_band_subset;
-bands = aux.bands;
-info_rmcall = aux.info_rmcall;
-info_slash = aux.info_slash;
-info_user = aux.info_user;
-n_m = aux.n_m;
-options_delimiter = aux.options_delimiter;
-options_delimiter_wavelength = aux.options_delimiter_wavelength;
-options_folder_structure = aux.options_folder_structure;
-options_movetonewfolder = aux.options_movetonewfolder;
-path_source = aux.path_source;
-path_target = aux.path_target;
-subpath_tiff_dir = aux.path_tiff_dir;
-subpath_jpg_dir = aux.path_jpg_dir;
-subpath_tiff_mask_dir = aux.path_tiff_mask_dir;
-subpath_jpg_mask_dir = aux.path_jpg_mask_dir;
-subpath_matlab_dir = aux.path_matlab_dir;
-subpath_envi_dir = aux.path_envi_dir;
-%w_wavelength = aux.w_wavelength;
-%w_wavelength = aux.w_wavelength;
-%m_wavelength_file = aux.m_wavelength_file;
-%m_wavelength_filepath = aux.m_wavelength_filepath;
-%rotation_angle = aux.m_rotation_angle;
-info_colormap = aux.info_colormap;
-m_wavelength_filepath = aux.m_wavelength_filepath;
-m_wavelength_file = aux.m_wavelength_file;
-m_wavelength = aux.m_wavelength;
-m_wavelength_file_new = aux.m_wavelength_file_new;
-
 %% Setup  
-isGR = false;
 % Clear without breakpoints
 %tmp = dbstatus;
 %save('tmp.mat','tmp');
@@ -74,35 +39,31 @@ else isunix();
     info_slash = '/';
     info_root = '/';
     info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
+    exiftoolcall = 'exiftool';
 end
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+if ispc();
+    command = sprintf(exiftoolcall);
+else isunix();
+    command = sprintf('which %s', exiftoolcall);
+end
+
+[exiftf,~] = system(command);
+if exiftf;
+    error('Please install Exiftool');
+end
 
 % Add Matlab directory to path (?)
 % addpath
 
 % OS-independent root directory 
 filepath_matlab = matlabroot;
-%filepath_matlab = strrep(filepath_matlab, ' ' , '\ ');
 ix_slash = strfind(filepath_matlab,info_slash);
 path_matlab = filepath_matlab(1:ix_slash(end));
 % May have to define new root directory if no write permissions, e.g.,
 if isKS;
     path_matlab = 'C:\Users\KevinSacca\Documents\';
 end
-if isGR;
-    path_matlab = 'F:\';
-   end
 % Determine previous directory for source data 
 filepath_source_previous = sprintf('%spath_source_previous.txt', ...
     path_matlab);
@@ -136,7 +97,7 @@ fclose(fid);
 bandnames = cell(n_m,1);
 for m = 1:n_m;
         filepath_full = m_filepath_band{m};
-        slash_ix = strfind(filepath_full,info_slash);
+        slash_ix = strfind(filepath_full,'/');
         name = filepath_full(slash_ix(end-2)+1:slash_ix(end-1)-1);
         ix_name = strfind(filepath_full,name);
         bandname = filepath_full(ix_name(end)+numel(name):end-4);
@@ -169,10 +130,10 @@ end
 
 
 fid = fopen(filepath_cube, 'a+');
-fprintf(fid, '\r\n');
-fprintf(fid, 'Cube%02.0f\r\n', cubeno);
+    fprintf(fid, '\n');
+fprintf(fid, 'Cube%02.0f\n', cubeno);
 for m = 1:n_m
-    fprintf(fid, '%s\r\n', bandnames{m});
+    fprintf(fid, '%s\n', bandnames{m});
 end
 %    fprintf(fid, '\n');
 

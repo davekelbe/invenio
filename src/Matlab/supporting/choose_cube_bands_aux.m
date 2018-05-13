@@ -22,20 +22,20 @@ path_source = aux.path_source;
 path_target = aux.path_target;
 subpath_tiff_dir = aux.path_tiff_dir;
 subpath_jpg_dir = aux.path_jpg_dir;
-subpath_tiff_mask_dir = aux.path_tiff_mask_dir;
-subpath_jpg_mask_dir = aux.path_jpg_mask_dir;
+% subpath_tiff_mask_dir = aux.path_tiff_mask_dir;
+% subpath_jpg_mask_dir = aux.path_jpg_mask_dir;
 subpath_matlab_dir = aux.path_matlab_dir;
-subpath_envi_dir = aux.path_envi_dir;
-%w_wavelength = aux.w_wavelength;
-%w_wavelength = aux.w_wavelength;
-%m_wavelength_file = aux.m_wavelength_file;
-%m_wavelength_filepath = aux.m_wavelength_filepath;
-%rotation_angle = aux.m_rotation_angle;
-info_colormap = aux.info_colormap;
-m_wavelength_filepath = aux.m_wavelength_filepath;
-m_wavelength_file = aux.m_wavelength_file;
-m_wavelength = aux.m_wavelength;
-m_wavelength_file_new = aux.m_wavelength_file_new;
+% subpath_envi_dir = aux.path_envi_dir;
+% %w_wavelength = aux.w_wavelength;
+% %w_wavelength = aux.w_wavelength;
+% %m_wavelength_file = aux.m_wavelength_file;
+% %m_wavelength_filepath = aux.m_wavelength_filepath;
+% %rotation_angle = aux.m_rotation_angle;
+% info_colormap = aux.info_colormap;
+% m_wavelength_filepath = aux.m_wavelength_filepath;
+% m_wavelength_file = aux.m_wavelength_file;
+% m_wavelength = aux.m_wavelength;
+% m_wavelength_file_new = aux.m_wavelength_file_new;
 
 %% Setup
 

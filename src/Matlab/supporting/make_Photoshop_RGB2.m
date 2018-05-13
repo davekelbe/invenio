@@ -28,92 +28,41 @@ fprintf('\n***********************************************************\n');
 fprintf('Tips\n');
 fprintf('            Press ctrl+c to cancel execution and restart\n');
 fprintf('            *Change default paths in source code (line 57-60)\n');
-%%
-%% Setup  
-isGR = false;
-% Clear without breakpoints
-%tmp = dbstatus;
-%save('tmp.mat','tmp');
-%clear all; close all; clc;
-%load('tmp.mat');
-%dbstop(tmp);
-%clear tmp;
-%delete('tmp.mat');
-% Set User
-isKS = false; 
-info_user = 'generic';
-switch info_user
-    case 'emel'
-        options_delimiter = '_';
-        options_delimiter_wavelength = '+';
-        options_folder_structure  = 'mss_folio';
-        options_movetonewfolder = 1;
-    case 'generic'
-        options_delimiter = '_';
-        options_delimiter_wavelength = '+';
-        options_folder_structure  = 'mss_folio';
-        options_movetonewfolder = 1;    
+%% Set User
+user = 'dave';
+%user = 'roger';
+
+%% Set default paths
+
+%current_path = cd;
+%current_path = sprintf('%s/',current_path);
+% Change default paths here
+
+switch user
+    case 'roger'
+        slash = '\';
+        rmcall = 'del';
+        movetonewfolder = 0;
+        default.source_path = pwd;
+        default.processed_dir = default.source_path;
+    case 'dave'
+        slash = '/';
+        rmcall = 'rm';
+        movetonewfolder = 0;
+        default.source_path = '/Users/Kelbe/';
+        default.processed_dir = default.source_path;
 end
 
-% Define OS-specific parameters 
-if ispc();
-    info_slash = '\';
-    info_root = 'C:\';
-    info_rmcall = 'del';
-    exiftoolcall = 'exiftool.pl';
-    % May have to define full path if not in $PATH, e.g., below
-    if isKS;
-        exiftoolcall = 'C:\Users\KevinSacca\Documents\MATLAB\exiftool.pl';
-    end
-else isunix();
-    info_slash = '/';
-    info_root = '/';
-    info_rmcall = 'rm';
-    exiftoolcall = '/usr/bin/exiftool';
-end
+fprintf('\n***********************************************************\n');
+fprintf('Setting Default Paths \n');
+fprintf('Source:     %s\n',default.source_path);
+fprintf('Save:       %s\n',default.processed_dir);
 
-% if ispc();
-%     command = sprintf(exiftoolcall);
-% else isunix();
-%     command = sprintf('which %s', exiftoolcall);
-% end
-% 
-% [exiftf,~] = system(command);
-% if exiftf;
-%     error('Please install Exiftool');
-% end
+%% Update paths
 
-% Add Matlab directory to path (?)
-% addpath
-
-% OS-independent root directory 
-filepath_matlab = matlabroot;
-%filepath_matlab = strrep(filepath_matlab, ' ' , '\ ');
-ix_slash = strfind(filepath_matlab,info_slash);
-path_matlab = filepath_matlab(1:ix_slash(end));
-% May have to define new root directory if no write permissions, e.g.,
-if isKS;
-    path_matlab = 'C:\Users\KevinSacca\Documents\';
-end
-if isGR;
-    path_matlab = 'F:\';
-   end
-% Determine previous directory for source data 
-filepath_source_previous = sprintf('%spath_source_previous.txt', ...
-    path_matlab);
-if exist(filepath_source_previous, 'file');
-    fid = fopen(filepath_source_previous);
-    path_source_previous = textscan(fid, '%s', 'delimiter', '\t');
-    path_source_previous = char(path_source_previous{1});
-else
-    path_source_previous = info_root; 
-end
-% Change source directory if no longer exists (e.g. drive removed) 
-if ~exist(path_source_previous, 'dir');
-    path_source_previous = info_root;
-end
-     path_source = path_source_previous;
-
+options.source_path = default.source_path;
+options.processed_dir = default.processed_dir; %GUI to customize
+%% Set Contrast Stretch Level
 
 % 2% Contrast Stretch
 lowfrac = .0002;
@@ -122,17 +71,11 @@ fprintf('\n%g%% Contrast Stretch\n', 100*(lowfrac*2));
 
 %% Choose source file, parent files, and output directory
 % Choose parent files
-cd(path_source);
+cd(default.source_path);
 %[SourceFile, source_path] = uigetfile('*.tif','Please choose a file for submission', 'MultiSelect', 'off');
 
 [files] = uipickfiles('Prompt','Please choose 2-3 images to combine into Photoshop RGB', 'FilterSpec', '*.tif','REFilter', '^[^\.]', 'REDirs', true);
 fprintf('\n***********************************************************\n');
-ix_slash = strfind(files{1},info_slash);
-path_source = files{1}(1:ix_slash(end-2));
-% Update previous directory 
-fid = fopen(filepath_source_previous, 'w+');
-fprintf(fid, '%s', path_source); 
-fclose(fid);
 
 n.files = size(files,2);
 
@@ -175,12 +118,12 @@ for f = 1:n.files
 end
 f=1;
 outfilename = sprintf('%s',files{1}(1:end-4));
-k = strfind(outfilename,info_slash);
+k = strfind(outfilename,slash);
 %outfilename = outfilename(1:k(end-1));
-%outfilename = sprintf('%sRGB%s%s',outfilename,info_slash,temp);
+%outfilename = sprintf('%sRGB%s%s',outfilename,slash,temp);
 for f = 2:n.files;
     temp_outfilename = sprintf('%s',files{f}(1:end-4));
-    k = strfind(temp_outfilename,info_slash);
+    k = strfind(temp_outfilename,slash);
     temp = temp_outfilename(k(end)+13:end);
     outfilename = sprintf('%s+%s',outfilename,temp);
 end

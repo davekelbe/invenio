@@ -19,6 +19,7 @@ function varargout = gui_select_roi2(varargin)
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
+
 % Edit the above text to modify the response to help gui_select_roi2
 
 % Last Modified by GUIDE v2.5 28-Aug-2014 20:28:55
@@ -53,7 +54,6 @@ function gui_select_roi2_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for gui_select_roi2 
  
-handles.kill = false;
 
 handles.output = hObject;
 
@@ -74,7 +74,6 @@ for i = 1:handles.nb;
 end
 handles.target_dir = varargin{2};
 handles.bandnames = varargin{3};
-handles.aux = varargin{4};
 
 set(handles.listbox,'String',handles.bandnames)
 set(handles.listbox,'Value',handles.b);
@@ -91,10 +90,9 @@ handles.roi_tf = false;
 handles.mapexists = false;
 
 handles.colormap = [...
-    [255 255 255]; % pink
-    [0 0 255]; % blue
-    [0 255 0]; % green
     [255 0 0]; % red
+    [0 255 0]; % green
+    [0 0 255]; % blue
     [255 255 0]; % yellow
     [0 255 255]; % cyan
     [255 0 255]; % white??
@@ -124,128 +122,28 @@ handles.himg = imshow(handles.I{handles.b},[0,255]);
 colormap('gray')
 axis image
 
-%
-%handles.tif_dir = sprintf('%stif%s', handles.target_dir(1:end-4), handles.target_dir(end));
-filepath_parchment_mask = sprintf('%s%s_parchment_mask.tif', handles.aux.path_tiff_dir{handles.aux.m},handles.aux.m_name{handles.aux.m});
-filepath_overtext_mask = sprintf('%s%s_overtext_mask.tif', handles.aux.path_tiff_dir{handles.aux.m},handles.aux.m_name{handles.aux.m}); 
-filepath_undertext_mask = sprintf('%s%s_undertext_mask.tif', handles.aux.path_tiff_dir{handles.aux.m},handles.aux.m_name{handles.aux.m}); 
-mask = imread(filepath_parchment_mask);
-if numel(size(mask)) > 1
-    mask = mask(:,:,1);
-    imwrite(mask, filepath_parchment_mask);
-end
-if ~islogical(mask)
-    mask = logical(mask./max(mask));
-    imwrite(mask, filepath_parchment_mask);
-end
-mask = imresize(mask,0.4);
-handles.m = handles.m + 1;
-handles.mask = cat(3,handles.mask,mask);
-% axes(handles.axes1);
-% handles.map1(mask) = handles.colormap(handles.m,1);
-% handles.map2(mask) = handles.colormap(handles.m,2);
-% handles.map3(mask) = handles.colormap(handles.m,3);
-% handles.map = cat(3, handles.map1,handles.map2,handles.map3);
-% handles.ismap = any((handles.map),3);
-% handles.alpha = zeros(handles.nr, handles.nc)+0.1;
-% handles.alpha(~handles.ismap) = 0;
-% hold on;
-% handles.h_map = imshow(handles.map);
-% set(handles.h_map,'AlphaData',handles.alpha);
-% handles.mapexists = true;
-
-% Update handles structure 
-%guidata(hObject, handles);
-%uiwait(handles.figure1);
-%handles.map = uint8(zeros(handles.nr, handles.nc,3));
-%handles.map1 = handles.map(:,:,1);
-%handles.map2 = handles.map(:,:,2);
-%handles.map3 = handles.map(:,:,3);
-mask = imread(filepath_overtext_mask);
-if numel(size(mask)) > 1
-    mask = mask(:,:,1);
-    imwrite(mask, filepath_parchment_mask);
-end
-if ~islogical(mask)
-    mask = logical(mask./max(mask));
-    imwrite(mask, filepath_overtext_mask);
-end
-mask = imresize(mask,0.4);
-handles.m = handles.m + 1;
-axes(handles.axes1);
-handles.mask = cat(3,handles.mask,mask);
-handles.map1(mask) = handles.colormap(handles.m,1);
-handles.map2(mask) = handles.colormap(handles.m,2);
-handles.map3(mask) = handles.colormap(handles.m,3);
-handles.map = cat(3, handles.map1,handles.map2,handles.map3);
-handles.ismap = any((handles.map),3);
-handles.alpha = zeros(handles.nr, handles.nc)+0.25;
-handles.alpha(~handles.ismap) = 0;
-%hold on;
-%handles.h_map = imshow(handles.map);
-%set(handles.h_map,'AlphaData',handles.alpha);
-%handles.mapexists = true;
-
-%handles.map = uint8(zeros(handles.nr, handles.nc,3));
-%handles.map1 = handles.map(:,:,1);
-%handles.map2 = handles.map(:,:,2);
-%handles.map3 = handles.map(:,:,3);
-mask = imread(filepath_undertext_mask);
-if numel(size(mask)) > 1
-    mask = mask(:,:,1);
-    imwrite(mask, filepath_parchment_mask);
-end
-if ~islogical(mask)
-    mask = logical(mask./max(mask));
-    imwrite(mask, filepath_undertext_mask);
-end
-mask = imresize(mask,0.4);
-handles.m = handles.m + 1;
-axes(handles.axes1);
-handles.mask = cat(3,handles.mask,mask);
-handles.map1(mask) = handles.colormap(handles.m,1);
-handles.map2(mask) = handles.colormap(handles.m,2);
-handles.map3(mask) = handles.colormap(handles.m,3);
-handles.map = cat(3, handles.map1,handles.map2,handles.map3);
-handles.ismap = any((handles.map),3);
-handles.alpha = zeros(handles.nr, handles.nc)+0.25;
-handles.alpha(~handles.ismap) = 0;
-hold on;
-handles.h_map = imshow(handles.map);
-set(handles.h_map,'AlphaData',handles.alpha);
-handles.mapexists = true;
-
-
-% handles.mask = cat(3,handles.mask,mask);
-% delete(h_roi);
-% handles.map1(mask) = handles.colormap(handles.m,1);
-% handles.map2(mask) = handles.colormap(handles.m,2);
-% handles.map3(mask) = handles.colormap(handles.m,3);
-handles.mapexists = true;
-handles.roi_tf = true;
-%}
 
 handles.xlim = get(handles.axes1,'xlim');
 handles.ylim = get(handles.axes1,'ylim');
 handles.xlimorig = get(handles.axes1,'xlim');
 handles.ylimorig = get(handles.axes1,'ylim');
 hold on;
-%handles.h_roi = plot(handles.xlim(1),handles.ylim(1));
-%handles.h_map = plot(handles.xlim(1),handles.ylim(1));
+handles.h_roi = plot(handles.xlim(1),handles.ylim(1));
+handles.h_map = plot(handles.xlim(1),handles.ylim(1));
 guidata(hObject, handles);
+
 
 % UIWAIT makes gui_select_roi2 wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
 % --- Outputs from this function are returned to the command line.
-function iskill = gui_select_roi2_OutputFcn(hObject, eventdata, handles)
+function varargout = gui_select_roi2_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)%
-guidata(hObject, handles);
+%guidata(hObject, handles);
 %delete(handles.figure1);
-%iskill = true;%handles.kill;
 
 % --- Executes on button press in pushsave.
 function pushsave_Callback(hObject, eventdata, handles)
@@ -256,14 +154,15 @@ function pushsave_Callback(hObject, eventdata, handles)
 % Choose output directory
 guidata(hObject, handles);
 
-if ispc();
+% Save mask images
+envi_dir = sprintf('%senvi/',handles.target_dir(1:end-4));
+if ispc()
     info_slash = '\';
-else 
+else
     info_slash = '/';
 end
-% Save mask images
-envi_dir = sprintf('%senvi%s',handles.target_dir(1:end-4), info_slash);
-ix_slash = strfind(handles.target_dir, '/');
+
+ix_slash = strfind(handles.target_dir, info_slash);
 cube = handles.target_dir(ix_slash(end-2)+1:ix_slash(end-1)-1);
 %cube = handles.target_dir(end-15:end-5);
 
@@ -275,33 +174,14 @@ for d = 1:n_d;
     if strcmp(D(d).name(1),'.');
         continue
     end
-    current_masks(d) = str2double(D(d).name(17:18));
+    current_masks(d) = str2double(D(d).name(end-5:end-4));
 end
 max_mask = max(current_masks);
 max_mask = max([max_mask; 0]);
  
-
-% copy first three masks from tif folder 
-filepath_source = sprintf('%s%s_parchment_mask.tif', ...
-    handles.aux.path_tiff_dir{handles.aux.m}, handles.aux.m_name{handles.aux.m});
-mask_parchment = imread(filepath_source);
-filepath_target = sprintf('%s%s_mask01.tif', envi_dir, cube);
-command = sprintf('cp %s %s', filepath_source, filepath_target);
-[~,~] = system(command);
-filepath_source = sprintf('%s%s_overtext_mask.tif', ...
-    handles.aux.path_tiff_dir{handles.aux.m}, handles.aux.m_name{handles.aux.m});
-filepath_target = sprintf('%s%s_mask02.tif', envi_dir, cube);
-command = sprintf('cp %s %s', filepath_source, filepath_target);
-[~,~] = system(command);
-filepath_source = sprintf('%s%s_undertext_mask.tif', ...
-    handles.aux.path_tiff_dir{handles.aux.m}, handles.aux.m_name{handles.aux.m});
-filepath_target = sprintf('%s%s_mask03.tif', envi_dir, cube);
-command = sprintf('cp %s %s', filepath_source, filepath_target);
-[~,~] = system(command);
-
 % Determine resize factor
-length_orig = size(mask_parchment,2);
-width_orig = size(mask_parchment,1);
+length_orig = 8176;
+width_orig = 6132;
 dims_curr = size(handles.mask(:,:,1));
 length_curr = max(dims_curr);
 width_curr = min(dims_curr);
@@ -315,11 +195,10 @@ resize_lw = max(resize_l, resize_w);
 
 
 n_m = size(handles.mask,3);
-for m = 4:n_m;
+for m = 1:n_m;
     filepath_mask = sprintf('%s%s_mask%02.0f.tif',envi_dir,cube,max_mask + m);
     M = imresize(handles.mask(:,:,m),resize_lw);
     M = M(1:reference_dims(1),1:reference_dims(2));
-    %M(~mask_parchment) = 0;
     imwrite(M,filepath_mask, 'tiff');
 end
 
@@ -330,41 +209,12 @@ J2 = handles.I{1}(:,:,2);
 J3 = handles.I{1}(:,:,3);
 handles.colormap01 = handles.colormap./255;
 
-wildcard = 'W365O22';
-%cd(handles.aux.path_tiff_dir{handles.aux.m});
-is_valid = cellfun(@(x) contains(x,wildcard), handles.aux.m_wavelength{handles.aux.m});
-if sum(is_valid) == 0
-    is_valid = cellfun(@(x) contains(x,'WBUVO22'), handles.aux.m_wavelength{handles.aux.m});
-end
-ix_valid = find(is_valid);
-ix_valid = ix_valid(1);
-%wavelength = handles.aux.m_wavelength_file_new;
-filepath_I = sprintf('%s',handles.aux.path_tiff_dir{handles.aux.m},handles.aux.m_wavelength_file_new{handles.aux.m}{ix_valid});
-I1 = imresize(double(imread(filepath_I))./65535, size(J1));
-I1 = I1./max(I1(:));
-I2 = I1;
-I3 = I1;
-
-D = dir('*_F.tif');
-w_wavelength = remove_hiddenfiles(D);
-n_w = numel(w_wavelength);
-for w = 1:n_w
-    ix_delimiter = strfind(w_wavelength{w},options_delimiter_wavelength);
-    w_wavelength{w} = w_wavelength{w}(ix_delimiter:end);
-end
-
-
-for m = 2:n_m;
-    I1(handles.mask(:,:,m)) = .75*I1(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,1));
-    I2(handles.mask(:,:,m)) = .75*I2(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,2));
-    I3(handles.mask(:,:,m)) = .75*I3(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,3));
-
+for m = 1:n_m;
     J1(handles.mask(:,:,m)) = .75*J1(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,1));
     J2(handles.mask(:,:,m)) = .75*J2(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,2));
     J3(handles.mask(:,:,m)) = .75*J3(handles.mask(:,:,m)) + 0.25*(handles.colormap01(m,3));
 end
 J = cat(3,J1,J2,J3);
-I = cat(3,I1,I2,I3);
 
 D = dir('*map*');
 n_d = numel(D);
@@ -379,8 +229,7 @@ max_map = max([current_maps;0]);
  
 filepath_map = sprintf('%s%s_mapTr%02.0f.tif',envi_dir,cube,max_map + 1);
 imwrite(uint8(J*255),filepath_map, 'jpeg','quality',80);
-filepath_map = sprintf('%s%s_mapTrGray%02.0f.tif',envi_dir,cube,max_map + 1);
-imwrite(uint8(I*255),filepath_map, 'jpeg','quality',80);
+ 
 
 % Save alpha image KTK 
 % J1 = handles.I{2}(:,:,1);
@@ -459,14 +308,7 @@ function pushcancel_Callback(hObject, eventdata, handles)
 % hObject    handle to pushcancel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-%status = true;
-guidata(hObject, handles);
-
-close all force
-return
-%exit 
-%close(handles.figure1);
-%delete(handles.figure1);
+delete(handles.figure1);
 
 
 % --- Executes on button press in pushaddtoroi.
@@ -532,27 +374,21 @@ switch get(handles.list_roitype,'value');
         h_roi = imrect;
         mask = createMask(h_roi,handles.himg);
 end
-if sum(mask(:)) > 10
-    handles.mask = cat(3,handles.mask,mask);
-    delete(h_roi);
-    handles.map1(mask) = handles.colormap(handles.m,1);
-    handles.map2(mask) = handles.colormap(handles.m,2);
-    handles.map3(mask) = handles.colormap(handles.m,3);
-    if handles.roi_tf;
-        handles.map = cat(3, handles.map1,handles.map2,handles.map3);
-        handles.ismap = any((handles.map),3);
-        handles.alpha = zeros(handles.nr, handles.nc)+0.25;
-        handles.alpha(~handles.ismap) = 0;
-        hold on;
-        handles.h_map = imshow(handles.map);
-        set(handles.h_map,'AlphaData',handles.alpha);
-    end
-    handles.mapexists = true;
-else
+handles.mask = cat(3,handles.mask,mask);
+delete(h_roi);
+handles.map1(mask) = handles.colormap(handles.m,1);
+handles.map2(mask) = handles.colormap(handles.m,2);
+handles.map3(mask) = handles.colormap(handles.m,3);
+if handles.roi_tf;
+    handles.map = cat(3, handles.map1,handles.map2,handles.map3);
+    handles.ismap = any((handles.map),3);
+    handles.alpha = zeros(handles.nr, handles.nc)+0.25;
+    handles.alpha(~handles.ismap) = 0;
+    hold on;
     handles.h_map = imshow(handles.map);
     set(handles.h_map,'AlphaData',handles.alpha);
-    handles.m = handles.m - 1;
 end
+handles.mapexists = true;
 
 % Update handles structure 
 guidata(hObject, handles);
@@ -656,7 +492,7 @@ function hideroi_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %handles.roi_tf = get(handles.hideroi,'value');
-if handles.roi_tf;
+if ~handles.roi_tf;
     delete(handles.h_map);
 end 
 % Update handles structure
