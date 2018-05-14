@@ -41,7 +41,7 @@ envi_batch_init, /no_status_window;, log_file='batch.txt'
 ENVI_BATCH_STATUS_WINDOW, /OFF
 ; Contrast stretch of output images = 1% 
 lowfrac = 0.005
-info_slash = '\'
+info_slash = '/'
 
 ; dir_uppper now function input 
 dir_task = dir_task;'/Volumes/NewZealand/Deliver_DJK_11-Jan-2016-best/'

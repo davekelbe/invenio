@@ -32,38 +32,40 @@ fprintf('\n***********************************************************\n');
 fprintf('Register reverse: \n');
 
 m_path_upper = aux.m_path_upper;
-m_folio = aux.m_folio;
-m_mss = aux.m_mss;
+
 m_name = aux.m_name;
 %m_wavelength_file_new = aux.m_wavelength_file_new;
-is_band_subset = aux.is_band_subset;
-bands = aux.bands;
-info_rmcall = aux.info_rmcall;
 info_slash = aux.info_slash;
-info_user = aux.info_user;
 n_m = aux.n_m;
-options_delimiter = aux.options_delimiter;
-options_delimiter_wavelength = aux.options_delimiter_wavelength;
-options_folder_structure = aux.options_folder_structure;
-options_movetonewfolder = aux.options_movetonewfolder;
 path_source = aux.path_source;
 path_target = aux.path_target;
-subpath_tiff_dir = aux.path_tiff_dir;
-subpath_jpg_dir = aux.path_jpg_dir;
-subpath_tiff_mask_dir = aux.path_tiff_mask_dir;
-subpath_jpg_mask_dir = aux.path_jpg_mask_dir;
-subpath_matlab_dir = aux.path_matlab_dir;
-subpath_envi_dir = aux.path_envi_dir;
-%w_wavelength = aux.w_wavelength;
-%w_wavelength = aux.w_wavelength;
-%m_wavelength_file = aux.m_wavelength_file;
-%m_wavelength_filepath = aux.m_wavelength_filepath;
-%rotation_angle = aux.m_rotation_angle;
-info_colormap = aux.info_colormap;
+subpath_tiff_dir = aux.subpath_tiff_dir;
+subpath_jpg_dir = aux.subpath_jpg_dir;
+subpath_matlab_dir = aux.subpath_matlab_dir;
 m_wavelength_filepath = aux.m_wavelength_filepath;
 m_wavelength_file = aux.m_wavelength_file;
-m_wavelength = aux.m_wavelength;
-m_wavelength_file_new = aux.m_wavelength_file_new;
+m_wavelength = repmat(aux.w_wavelength, 1, n_m); % hack Cambridge
+m_wavelength_file_new = aux.m_wavelength_file; % cambridge hack
+
+%%
+% Make additional directories 
+% for m = 1:aux.n_m
+%     aux.subpath_tiff_mask_dir{m} = sprintf('%s%s_%s%s%s_%s+tiffm%s',...
+%         aux.path_target,...
+%         aux.m_mss{m},aux.m_folio{m},aux.info_slash,aux.m_mss{m},aux.m_folio{m},aux.info_slash);
+%     aux.subpath_jpg_mask_dir{m} = sprintf('%s%s_%s%s%s_%s+jpgm%s',...
+%         aux.path_target,...
+%         aux.m_mss{m},aux.m_folio{m},aux.info_slash,aux.m_mss{m},aux.m_folio{m},aux.info_slash);
+%     if ~exist(aux.subpath_tiff_mask_dir{m},'dir')
+%         mkdir(aux.subpath_tiff_mask_dir{m})
+%     end
+%     if ~exist(aux.subpath_jpg_mask_dir{m},'dir')
+%         mkdir(aux.subpath_jpg_mask_dir{m})
+%     end
+% end
+% 
+% subpath_tiff_mask_dir = aux.subpath_tiff_mask_dir;
+% subpath_jpg_mask_dir = aux.subpath_jpg_mask_dir;
 
 %% Check if reference value exists for all folios
 for m = 1:n_m
@@ -71,20 +73,28 @@ for m = 1:n_m
     cd(path_target);
     D = dir();
     D = remove_hiddenfiles(D);
-    
+     
     filepath_reverse_tif =  sprintf('%s%s_DJK_reverse_true.tif',subpath_tiff_dir{m},m_name{m});
     filepath_reverse_jpg =  sprintf('%s%s_DJK_reverse_true.jpg',subpath_jpg_dir{m},m_name{m});
-    filepath_reverse_gray_tif =  sprintf('%s%s_DJK_reverse_gray.tif',subpath_tiff_dir{m},m_name{m});
-    filepath_reverse_gray_jpg =  sprintf('%s%s_DJK_reverse_gray.jpg',subpath_jpg_dir{m},m_name{m});
+    filepath_gray_reverse_tif =  sprintf('%s%s_DJK_reverse_gray.tif',subpath_tiff_dir{m},m_name{m});
+    filepath_gray_reverse_jpg =  sprintf('%s%s_DJK_reverse_gray.jpg',subpath_jpg_dir{m},m_name{m});
+    filepath_reverse_tx_tif =  sprintf('%s%s_DJK_reverse_tx.tif',subpath_tiff_dir{m},m_name{m});
+
+    filepath_true_reverse_reg = sprintf('%s%s/%s+tiff/%s_DJK_true_reverse_reg.tif', path_target, m_name{m}, m_name{m}, m_name{m});
+    filepath_true_reverse_reg_jpg = sprintf('%s%s/%s+jpg/%s_DJK_true_reverse_reg.jpg', path_target, m_name{m}, m_name{m}, m_name{m});
+
+    filepath_reverse = sprintf('%s%s/%s+tiff/%s_DJK_reverse_gray.tif',path_target, m_name{m}, m_name{m}, m_name{m}');
+    filepath_out_reg_tiff = sprintf('%s%s/%s+tiff/%s_DJK_reverse_gray_reg.tif',path_target, m_name{m}, m_name{m}, m_name{m}');
+    filepath_out_reg_jpg = sprintf('%s%s/%s+jpg/%s_DJK_reverse_gray_reg.jpg',path_target, m_name{m}, m_name{m}, m_name{m}');
+
     
-    filepath_reverse_mask_tif =  sprintf('%s%s_DJK_reverse_true.tif',subpath_tiff_mask_dir{m},m_name{m});
-    filepath_reverse_mask_jpg =  sprintf('%s%s_DJK_reverse_true.jpg',subpath_jpg_mask_dir{m},m_name{m});
-    filepath_reverse_mask_gray_tif =  sprintf('%s%s_DJK_reverse_gray.tif',subpath_tiff_mask_dir{m},m_name{m});
-    filepath_reverse_mask_gray_jpg =  sprintf('%s%s_DJK_reverse_gray.jpg',subpath_jpg_mask_dir{m},m_name{m});
-    if exist(filepath_reverse_tif, 'file') && exist(filepath_reverse_jpg, 'file') && ...
-             exist(filepath_reverse_mask_jpg, 'file') && exist(filepath_reverse_mask_tif, 'file') && ...
-             exist(filepath_reverse_mask_gray_jpg, 'file') && exist(filepath_reverse_mask_gray_tif, 'file')
-        % continue
+    %filepath_reverse_mask_tif =  sprintf('%s%s_DJK_reverse_true.tif',subpath_tiff_mask_dir{m},m_name{m});
+    %filepath_reverse_mask_jpg =  sprintf('%s%s_DJK_reverse_true.jpg',subpath_jpg_mask_dir{m},m_name{m});
+    %filepath_reverse_mask_gray_tif =  sprintf('%s%s_DJK_reverse_gray.tif',subpath_tiff_mask_dir{m},m_name{m});
+    %filepath_reverse_mask_gray_jpg =  sprintf('%s%s_DJK_reverse_gray.jpg',subpath_jpg_dir{m},m_name{m});
+    if exist(filepath_true_reverse_reg, 'file') && exist(filepath_true_reverse_reg_jpg, 'file') &&...
+             exist(filepath_gray_reverse_jpg, 'file') && exist(filepath_gray_reverse_tif, 'file')
+        continue
     end
     %filepath_I_front = sprintf('%s%s_DJK_true.tif',subpath_tiff_dir{m}, m_name{m});
     %I_front = imread(filepath_I_front);
@@ -131,10 +141,16 @@ for m = 1:n_m
     
     name_reverse = str;
     
-    filepath_mask_front = sprintf('%s%s_parchment_mask.tif',subpath_matlab_dir{m}, m_name{m});
+    filepath_mask_front = sprintf('%s%s_DJK_mask.tif',subpath_matlab_dir{m}, m_name{m});
+    
+    if ~exist(filepath_mask_front, 'file')
+        error('Please manually make a mask for parchment');
+        %create_parchment_mask(aux);
+    end 
+    
     mask_front = imread(filepath_mask_front);
-    filepath_mask_reverse = sprintf('%s%s/%s+matlab/%s_parchment_mask.tif', path_target, name_reverse, name_reverse, name_reverse);
-    filepath_RGB_reverse = sprintf('%s%s/%s+tiff/%s_DJK_true.tif', path_target, name_reverse, name_reverse, name_reverse);
+    filepath_mask_reverse = sprintf('%s%s/%s+matlab/%s_DJK_reverse_mask.tif', path_target, m_name{m}, m_name{m}, m_name{m});
+    filepath_RGB_reverse = sprintf('%s%s/%s+tiff/%s_DJK_true.tif', path_target, m_name{m}, m_name{m}, m_name{m});
     path_reverse = sprintf('%s%s/', path_source, name_reverse);
     D = dir(path_reverse);
     D = remove_hiddenfiles(D);
@@ -144,76 +160,142 @@ for m = 1:n_m
     end
     ix_ir = find(is_ir);
     ix_ir = ix_ir(1);
+    
+    is_red = cellfun(@(x) contains(x,'MB630RD'), D);
+    ix_red = find(is_red);
+    ix_red = ix_red(1);
+    is_green = cellfun(@(x) contains(x,'MB530GN'), D);
+    ix_green = find(is_green);
+    ix_green = ix_green(1); 
+    is_blue = cellfun(@(x) contains(x,'MB450RB'), D);
+    ix_blue = find(is_blue);
+    ix_blue = ix_blue(1);
+    is_tx = cellfun(@(x) contains(x,'TX500CN'), D);
+    ix_tx = find(is_tx);
+    ix_tx = ix_tx(1);
+    
+    filepath_ir = sprintf('%s%s', path_reverse, D{ix_ir});
+    filepath_red = sprintf('%s%s', path_reverse, D{ix_red});
+    filepath_green = sprintf('%s%s', path_reverse, D{ix_green});
+    filepath_blue = sprintf('%s%s', path_reverse, D{ix_blue});
+    filepath_tx = sprintf('%s%s', path_reverse, D{ix_tx});
 
-    filepath_gray_reverse = sprintf('%s%s%s%s', path_target, name_reverse, info_slash, D{ix_ir});
-    if ~exist(filepath_mask_reverse, 'file') || ~exist(filepath_RGB_reverse, 'file') || ~exist(filepath_gray_reverse, 'file');
-        aux.m_name = {name_reverse};
-        aux.m_path_upper = {strrep(m_path_upper{m}, suffix, new_suffix)};
-        ix_delim = strfind(aux.m_name{m}, aux.options_delimiter);
-        aux.m_mss = {aux.m_name{m}(1:ix_delim(end)-1)};
-        aux.m_folio = {aux.m_name{m}(ix_delim(end)+1:end)};
-        aux.path_tiff_dir = {strrep(aux.path_tiff_dir{m}, suffix, new_suffix)};
-        aux.path_jpg_dir = {strrep(aux.path_jpg_dir{m}, suffix, new_suffix)};
-        aux.path_tiff_mask_dir = {strrep(aux.path_tiff_mask_dir{m}, suffix, new_suffix)};
-        aux.path_jpg_mask_dir = {strrep(aux.path_jpg_mask_dir{m}, suffix, new_suffix)};
-        aux.path_matlab_dir = {strrep(aux.path_matlab_dir{m}, suffix, new_suffix)};
-        aux.path_envi_dir = {strrep(aux.path_envi_dir{m}, suffix, new_suffix)};
-        aux.m_wavelength_filepath = [];
-        aux.m_wavelength_file = [];
-        aux.m_wavelength = [];
-        aux.m_wavelength_file_new = [];
-        dir_local = sprintf('%s%s%s',path_source, new_suffix, info_slash);
-        D = dir(dir_local);
-        D = remove_hiddenfiles(D);
-        
-        for w = 1:numel(m_wavelength_filepath{m})
-            aux.m_wavelength_filepath{1}{w} = strrep(m_wavelength_filepath{m}{w}, suffix, new_suffix);
-            aux.m_wavelength_file{1}{w} = strrep(m_wavelength_file{m}{w}, suffix, new_suffix);
-            aux.m_wavelength{1}{w} = strrep(m_wavelength{m}{w}, suffix, new_suffix);
-            aux.m_wavelength_file_new{1}{w} = strrep(m_wavelength_file_new{m}{w}, suffix, new_suffix);
-        end
-        is_valid = false(numel(m_wavelength_file{1}),1);
-        for d = 1:numel(D)
-            is_valid_temp = cellfun(@(x) contains(x,D{d}), aux.m_wavelength_file{1})';
-            is_valid = is_valid | is_valid_temp;
-        end
-        aux.m_wavelength_filepath{1} = aux.m_wavelength_filepath{1}(is_valid);
-        aux.m_wavelength_file{1} = aux.m_wavelength_file{1}(is_valid);
-        aux.m_wavelength{1} = aux.m_wavelength{1}(is_valid);
-        aux.m_wavelength_file_new{1} = aux.m_wavelength_file_new{1}(is_valid);
+    I_ir = double(imread(filepath_ir));
+    I_red = double(imread(filepath_red));
+    I_green = double(imread(filepath_green));
+    I_blue = double(imread(filepath_blue));
+    I_tx = double(imread(filepath_tx));
 
-        
-        path_up = sprintf('%s%s%s',path_target, aux.m_name{1}, info_slash);
-        if ~exist(path_up, 'dir')
-            mkdir(path_up);
+    h = figure('name','Please choose spectralon');
+    
+    %imagesc(imadjust(I_red,stretchlim(I_red),[]));
+    imagesc(I_red);
+    
+    hFH = imfreehand();
+    % Create a binary image ("mask") from the ROI object.
+    mask = hFH.createMask();
+    delete(h);
+    reference = zeros(5,1);
+    spectralon_DC = I_red(mask);
+    spectral_DCmax = mean(spectralon_DC(:))+2*std(spectralon_DC(:));
+    LOW_HIGH = stretchlim(spectralon_DC./spectral_DCmax,[0 .99]);
+    reference(1) =  1*LOW_HIGH(2)*spectral_DCmax;
+    
+    spectralon_DC = I_green(mask);
+    spectral_DCmax = mean(spectralon_DC(:))+2*std(spectralon_DC(:));
+    LOW_HIGH = stretchlim(spectralon_DC./spectral_DCmax,[0 .99]);
+    reference(2) =  1*LOW_HIGH(2)*spectral_DCmax;
+   
+    spectralon_DC = I_blue(mask);
+    spectral_DCmax = mean(spectralon_DC(:))+2*std(spectralon_DC(:));
+    LOW_HIGH = stretchlim(spectralon_DC./spectral_DCmax,[0 .99]);
+    reference(3) =  1*LOW_HIGH(2)*spectral_DCmax;
+   % save(filepath_reference{m},'reference');
+   
+    spectralon_DC = I_ir(mask);
+    spectral_DCmax = mean(spectralon_DC(:))+2*std(spectralon_DC(:));
+    LOW_HIGH = stretchlim(spectralon_DC./spectral_DCmax,[0 .99]);
+    reference(4) =  1*LOW_HIGH(2)*spectral_DCmax;
+   % save(filepath_reference{m},'reference');
+    
+   I_tx = I_tx./max(I_tx(:));
+    LOW_HIGH = stretchlim(I_tx,[0 .99]);
+    reference(5) =  LOW_HIGH(2);%1*LOW_HIGH(2)*spectral_DCmax;
+   % save(filepath_reference{m},'reference');
+    
+   
+    I_red = I_red./reference(1);
+    I_green = I_green./reference(2);
+    I_blue = I_blue./reference(3);
+    I_ir = I_ir./reference(4);
+    I_tx = I_tx./reference(5);
+
+    % Get rotation
+    got_rotation = false;
+    % Get rotation
+        if ~got_rotation
+            got_rotation = true;
+            filepath_nospace = strrep( filepath_red, ' ', '\ ');
+            command = sprintf('%s -Orientation %s', aux.exiftoolcall, filepath_nospace);
+            [~, exifout] = system(command);
+             k = strfind(exifout, ': ');
+            if numel(exifout)>0
+                exifrotation = strtrim(exifout(k+2:end));
+            end
+            
+            if numel(exifout)>0
+                switch exifrotation
+                    case 'Horizontal (normal)'
+                        m_rotation_angle(m) = 0;
+                    case 'Rotate 180'
+                        m_rotation_angle(m) = 180;
+                    case 'Rotate 90 CW'
+                        m_rotation_angle(m) = 90;
+                    case 'Rotate 270 CW'
+                        m_rotation_angle(m) = 270;
+                end
+            end
+            %filepath_rotation = sprintf('%srotation.mat', aux.subpath_matlab_dir{m});
+            %rotation_angle = m_rotation_angle(m);
+            %save(filepath_rotation, 'rotation_angle'); 
         end
-        path_temp = sprintf('%s%s%s%s+tiff%s',path_target, aux.m_name{1}, info_slash, aux.m_name{1}, info_slash);
-        if ~exist(path_temp, 'dir')
-            mkdir(path_temp);
-        end
-        path_temp = sprintf('%s%s%s%s+tiffm%s',path_target, aux.m_name{1}, info_slash, aux.m_name{1}, info_slash);
-        if ~exist(path_temp, 'dir')
-            mkdir(path_temp);
-        end
-        path_temp = sprintf('%s%s%s%s+jpg%s',path_target, aux.m_name{1}, info_slash, aux.m_name{1}, info_slash);
-        if ~exist(path_temp, 'dir')
-            mkdir(path_temp);
-        end
-        path_temp = sprintf('%s%s%s%s+jpgm%s',path_target, aux.m_name{1}, info_slash, aux.m_name{1}, info_slash);
-        if ~exist(path_temp, 'dir')
-            mkdir(path_temp);
-        end        
-        aux.n_m = 1;
-        create_spectralon_mask(aux);
-        %create_chopsticks_mask(aux);
-        %create_chopsticks2_mask(aux);
-        create_overtext_mask(aux);
-        create_parchment_mask(aux);
-        reflectance_tiffs9_rgb(aux);
-        reflectance_tiffs11(aux,'MB655DR');
-    end
-        
-        
+        I_red = imrotate(I_red,-m_rotation_angle(m));
+        I_green = imrotate(I_green,-m_rotation_angle(m));
+        I_blue = imrotate(I_blue,-m_rotation_angle(m));
+        I_ir = imrotate(I_ir,-m_rotation_angle(m));
+        I_tx = imrotate(I_tx,-m_rotation_angle(m));
+
+    RGB = zeros(size(I_red,1), size(I_red,2),3);
+    RGB(:,:,1) = I_red;
+    RGB(:,:,2) = I_green;
+    RGB(:,:,3) = I_blue;
+    
+    RGB(RGB>1) = 1;
+    I_ir(I_ir > 1) = 1;
+    I_tx(I_tx > 1) = 1;
+
+    RGB_tiff = uint16(RGB*65536);
+    RGB_jpg = imresize(RGB,.4);
+    RGB_jpg = uint8(RGB_jpg*256);
+    IR_tiff = uint16(I_ir*65536);
+    IR_jpg = imresize(I_ir,.4);
+    IR_jpg = uint8(I_ir*256);
+    Tx_tiff = uint16(I_tx*65536);
+    %Tx_jpg = imresize(I_tx,.4);
+    %Tx_jpg = uint8(I_tx*256);
+    
+    imwrite(RGB_tiff, filepath_reverse_tif, 'tif');
+    imwrite(RGB_jpg, filepath_reverse_jpg, 'jpg', 'quality', 50);
+    imwrite(IR_tiff, filepath_gray_reverse_tif, 'tif');
+    imwrite(IR_jpg, filepath_gray_reverse_jpg, 'jpg', 'quality', 50);      
+    imwrite(Tx_tiff, filepath_reverse_tx_tif, 'tif');
+    %imwrite(Tx_jpg, filepath_reverse_tx_jpg, 'jpg', 'quality', 50);   
+    
+    if ~exist(filepath_mask_front, 'file')
+        error('Please manually make a mask for reverse parchment');
+      %create_parchment_mask(aux);
+    end 
+    
     mask_reverse = imread(filepath_mask_reverse);
     
     mask_reverse_flip = flipud(mask_reverse);
@@ -228,8 +310,8 @@ for m = 1:n_m
     matchedPoints1 = vpts1(indexPairs(:,1));
     matchedPoints2 = vpts2(indexPairs(:,2));
     
-    %  figure; showMatchedFeatures(mask_front,mask_reverse,matchedPoints1,matchedPoints2);
-    %  legend('matched points 1','matched points 2');
+      figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
+      legend('matched points 1','matched points 2');
     
     [tform_ud,inlierPtsDistorted_ud,inlierPtsOriginal_ud] = ...
         estimateGeometricTransform(matchedPoints2,matchedPoints1,...
@@ -247,8 +329,8 @@ for m = 1:n_m
     matchedPoints1 = vpts1(indexPairs(:,1));
     matchedPoints2 = vpts2(indexPairs(:,2));
     
-    %  figure; showMatchedFeatures(mask_front,mask_reverse,matchedPoints1,matchedPoints2);
-    %  legend('matched points 1','matched points 2');
+      figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
+      legend('matched points 1','matched points 2');
     
     [tform_lr,inlierPtsDistorted_lr,inlierPtsOriginal_lr] = ...
         estimateGeometricTransform(matchedPoints2,matchedPoints1,...
@@ -272,8 +354,8 @@ for m = 1:n_m
         flip = 'lr';
     end
     %%
-    filepath_parchment_reverse = sprintf('%s%s%s%s+tiff%s%s_parchment_mask_reverse.tif', path_target, m_name{m}, info_slash, m_name{m},info_slash, m_name{m});
-    filepath_true_reverse = sprintf('%s%s/%s+tiff/%s_DJK_true.tif', path_target, name_reverse, name_reverse, name_reverse);
+    %filepath_parchment_reverse = sprintf('%s%s%s%s+tiff%s%s_parchment_mask_reverse.tif', path_target, m_name{m}, info_slash, m_name{m},info_slash, m_name{m});
+    filepath_true_reverse = sprintf('%s%s/%s+tiff/%s_DJK_reverse_true.tif', path_target, m_name{m}, m_name{m}, m_name{m});
     I_true_reverse = imread(filepath_true_reverse);
     switch flip
         case 'ud'
@@ -294,11 +376,11 @@ for m = 1:n_m
     outputViewMask = imref2d(size(mask_front));
     mask = imwarp(mask_reverse,tform,'OutputView',outputViewMask);
     
-    imwrite(Ir, filepath_reverse_tif);
+    imwrite(Ir, filepath_true_reverse_reg);
     Ir_jpg = uint8(255*double(Ir)./65535);
-    imwrite(Ir_jpg, filepath_reverse_jpg);
+    imwrite(Ir_jpg, filepath_true_reverse_reg_jpg);
     
-    imwrite(mask, filepath_parchment_reverse);
+    %imwrite(mask, filepath_parchment_reverse);
     
     % Repeat with mask
     Ir1 = Ir(:,:,1);
@@ -308,32 +390,14 @@ for m = 1:n_m
     Ir2(~mask) = 65535;
     Ir3(~mask) = 65535;
     I = cat(3,Ir1,Ir2,Ir3);
-    imwrite(I, filepath_reverse_mask_tif);
+    imwrite(I, filepath_mask_reverse_tif);
     Jjpg = double(I)./65535;
     Jjpg = uint8(256*Jjpg);
     imwrite(Jjpg,filepath_reverse_mask_jpg,'jpeg','Quality', 50);
 
    % return
     %% Repeat for IR band 
-    path_out = sprintf('%s%s/%s+tiff/',path_target, name_reverse, name_reverse');
-    cd(path_out);
-    D2 = dir();
-    D2 = remove_hiddenfiles(D2);
-    is_IR = cellfun(@(x) contains(x,'MB655DR'), D2);
-    if sum(is_IR) == 0
-        is_IR = cellfun(@(x) contains(x,'MB700IR'), m_wavelength{m});
-    end
-    ix_IR = find(is_IR);
-    if isempty(ix_IR);
-        reflectance_tiffs11(aux,'MB655DR');
-    end
-    ix_IR = ix_IR(end);
-    
-    filepath_reverse = sprintf('%s%s', path_out,D2{ix_IR});
-    if ~exist(filepath_reverse, 'file');
-        foo = 1;
-    end
-    
+
     I_reverse = imread(filepath_reverse);
     switch flip
         case 'ud'
@@ -348,46 +412,36 @@ for m = 1:n_m
     %  title('Recovered image');
     
     
-    cd(subpath_tiff_dir{m});
-    D2 = dir();
-    D2 = remove_hiddenfiles(D2);
-    is_IR = cellfun(@(x) contains(x,'MB655DR'), D2);
-    if sum(is_IR) == 0
-        is_IR = cellfun(@(x) contains(x,'MB700IR'), m_wavelength{m});
-    end
-    ix_IR = find(is_IR);
-    ix_IR = ix_IR(end);
     
+%     filepath_gray_front = sprintf('%s%s',subpath_tiff_dir{m}, D2{ix_IR});
+%     gray_front = imread(filepath_gray_front);
+%     filepath_gray_front = sprintf('%s%s_parchment_mask.tif',subpath_tiff_dir{m},m_name{m});
+%     if ~exist(filepath_gray_front, 'file');
+%             filepath_gray_front = sprintf('%s%s_parchment_mask2.tif',subpath_tiff_dir{m},m_name{m});
+%     end
+%     gray_front = imread(filepath_gray_front);
+%     filepath_gray_front = sprintf('%s%s_parchment_mask.tif',subpath_tiff_dir{m},m_name{m});
+%     gray_front = imread(filepath_gray_front);
+%     %I_reverse_flip = fliplr(imread('/Users/Kelbe/Desktop/MOTB/Processed/MOTB_MS_000566_r/MOTB_MS_000566_r+tiff/MOTB_MS_000566_r_parchment_mask.tif'));
+%     figure;
+%     showMatchedFeatures(gray_front,I_reverse_flip,...
+%         inlierPtsOriginal,inlierPtsDistorted);
+%     title('Matched inlier points - ud');
+%     saveas(gcf, sprintf('%s%s',subpath_matlab_dir{m},'verso_registration4.jpg'));
+%     close(gcf);
     
-    filepath_gray_front = sprintf('%s%s',subpath_tiff_dir{m}, D2{ix_IR});
-    gray_front = imread(filepath_gray_front);
-    filepath_gray_front = sprintf('%s%s_parchment_mask.tif',subpath_tiff_dir{m},m_name{m});
-    if ~exist(filepath_gray_front, 'file');
-            filepath_gray_front = sprintf('%s%s_parchment_mask2.tif',subpath_tiff_dir{m},m_name{m});
-    end
-    gray_front = imread(filepath_gray_front);
-    filepath_gray_front = sprintf('%s%s_parchment_mask.tif',subpath_tiff_dir{m},m_name{m});
-    gray_front = imread(filepath_gray_front);
-    %I_reverse_flip = fliplr(imread('/Users/Kelbe/Desktop/MOTB/Processed/MOTB_MS_000566_r/MOTB_MS_000566_r+tiff/MOTB_MS_000566_r_parchment_mask.tif'));
-    figure;
-    showMatchedFeatures(gray_front,I_reverse_flip,...
-        inlierPtsOriginal,inlierPtsDistorted);
-    title('Matched inlier points - ud');
-    saveas(gcf, sprintf('%s%s',subpath_matlab_dir{m},'verso_registration4.jpg'));
-    close(gcf);
-    
-    imwrite(Ir, filepath_reverse_gray_tif);
+    imwrite(Ir, filepath_out_reg_tiff);
     Ir_jpg = uint8(255*double(Ir)./65535);
     
-    imwrite(Ir_jpg, filepath_reverse_gray_jpg);
+    imwrite(Ir_jpg, filepath_out_reg_jpg);
     
     % Repeat with mask
     
-    Ir(~mask) = 65535;
-    imwrite(Ir, filepath_reverse_mask_gray_tif);
-    Jjpg = double(Ir)./65535;
-    Jjpg = uint8(256*Jjpg);
-    imwrite(Jjpg,filepath_reverse_mask_gray_jpg,'jpeg','Quality', 50);
+%     Ir(~mask) = 65535;
+%     imwrite(Ir, filepath_reverse_mask_gray_tif);
+%     Jjpg = double(Ir)./65535;
+%     Jjpg = uint8(256*Jjpg);
+%     imwrite(Jjpg,filepath_reverse_mask_gray_jpg,'jpeg','Quality', 50);
     
 end
 end

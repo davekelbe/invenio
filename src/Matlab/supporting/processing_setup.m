@@ -134,6 +134,7 @@ if isempty(k)
 end
 
 % Update target directory 
+aux.path_target = '/Volumes/Tyndale/Tyndale/Processed-CCR/'; % Hack Cambridge
 fid = fopen(filepath_target_previous, 'w+');
 fprintf(fid, '%s', aux.path_target); 
 fclose(fid);

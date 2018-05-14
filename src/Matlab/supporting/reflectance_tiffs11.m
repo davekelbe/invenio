@@ -48,6 +48,7 @@ w_isuv = cellfun(@(x) contains(x,'WBUV'), w_wavelength);
 w_isrb = cellfun(@(x) contains(x,'WBRB'), w_wavelength);
 w_isrs = cellfun(@(x) contains(x,'RS'), w_wavelength);
 w_isre = cellfun(@(x) contains(x,'RE'), w_wavelength);
+w_isrti = cellfun(@(x) contains(x,'RTI'), w_wavelength);
 
 % Initialize ref_val and shutter_speed arrays
 % filepath_stretchval = sprintf('%s%s_%s_refval.mat',aux.subpath_matlab_dir{1},aux.m_mss{1}, aux.m_folio{1});
@@ -122,7 +123,7 @@ for m = 1:aux.n_m
     for w = 1:n_w
         
         % Continue to next image if raking
-        if w_isrs(w) || w_isre(w); continue; end
+        if w_isrs(w) || w_isre(w) || w_isrti(w); continue; end
         
         % If the stretched file does not exist, begin
         filepath_tif = sprintf('%s%s_stretch.tif',...

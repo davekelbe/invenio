@@ -61,7 +61,7 @@ lowfrac = 0.005
 dir_temp = dir_upper
 ;dir_source = '/Volumes/Corinth/MOTB/Flattened/'
 ;dir_source = '/dirs/grad/djk2312/Flattened/EMEL/'
-info_slash = '\'
+info_slash = '/'
 if (is_ica) then begin  
   dir_write = strmid(dir_upper,0,strlen(dir_upper)-1)+'-' + 'jpg_ica' + info_slash
 endif else begin

@@ -32,32 +32,14 @@ fprintf('\n***********************************************************\n');
 fprintf('Create parchment mask: \n');
 
 m_path_upper = aux.m_path_upper;
-m_folio = aux.m_folio;
-m_mss = aux.m_mss;
 m_name = aux.m_name;
-is_band_subset = aux.is_band_subset;
-bands = aux.bands;
-info_rmcall = aux.info_rmcall;
-info_slash = aux.info_slash;
-info_user = aux.info_user;
 n_m = aux.n_m;
-options_delimiter = aux.options_delimiter;
 options_delimiter_wavelength = aux.options_delimiter_wavelength;
 options_folder_structure = aux.options_folder_structure;
-options_movetonewfolder = aux.options_movetonewfolder;
-path_source = aux.path_source;
-path_target = aux.path_target;
 subpath_tiff_dir = aux.path_tiff_dir;
 subpath_jpg_dir = aux.path_jpg_dir;
 subpath_matlab_dir = aux.path_matlab_dir;
-subpath_envi_dir = aux.path_envi_dir;
-%w_wavelength = aux.w_wavelength;
-%w_wavelength = aux.w_wavelength;
 m_wavelength = aux.m_wavelength;
-%m_wavelength_file = aux.m_wavelength_file;
-%m_wavelength_filepath = aux.m_wavelength_filepath;
-%rotation_angle = aux.m_rotation_angle;
-info_colormap = aux.info_colormap;
 
 info_min_pixels = 2000;
 clear aux
