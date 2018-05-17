@@ -41,11 +41,11 @@ aux.info_user = 'generic';
 
 %% Create truecolor images 
 
-%reflectance_tiffs9_rgb(aux);
+reflectance_tiffs9_rgb(aux);
 
 %% Register verso 
 
-register_verso_flipud( aux )
+%register_verso_flipud( aux )
 
 %% Resize auxiliary files 
 

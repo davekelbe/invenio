@@ -243,22 +243,23 @@ for m = 1:aux.n_m
         clear Jjpg J I
     end
     
+    if ~exist(filepath_shutter_speed, 'file')
+        save(filepath_shutter_speed,'w_shutter_speed');
+    end
+    if ~exist(filepath_aperture, 'file')
+        save(filepath_aperture,'w_aperture');
+    end
+    if ~exist(filepath_stretchval, 'file')
+        save(filepath_stretchval,'w_stretchval');
+    end
+    aux.w_wavelength = w_wavelength;
+    aux.m_wavelength_file = m_wavelength_file;
+    aux.m_wavelength_filepath = m_wavelength_filepath;
 end
 
- % Save auxiliary info
+% Save auxiliary info
 
-if ~exist(filepath_shutter_speed, 'file')
-    save(filepath_shutter_speed,'w_shutter_speed');
-end
-if ~exist(filepath_aperture, 'file')
-    save(filepath_aperture,'w_aperture');
-end
-if ~exist(filepath_stretchval, 'file')
-    save(filepath_stretchval,'w_stretchval');
-end
-aux.w_wavelength = w_wavelength;
-aux.m_wavelength_file = m_wavelength_file;
-aux.m_wavelength_filepath = m_wavelength_filepath; 
+
 % cell_summary = cell(n_w, 4);
 % cell_summary(:,1) = w_wavelength;
 % cell_summary(:,2) = cellstr(num2str(w_aperture));

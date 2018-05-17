@@ -82,7 +82,7 @@ for m = 1:n_m
 
     filepath_true_reverse_reg = sprintf('%s%s/%s+tiff/%s_DJK_true_reverse_reg.tif', path_target, m_name{m}, m_name{m}, m_name{m});
     filepath_true_reverse_reg_jpg = sprintf('%s%s/%s+jpg/%s_DJK_true_reverse_reg.jpg', path_target, m_name{m}, m_name{m}, m_name{m});
-
+  
     filepath_reverse = sprintf('%s%s/%s+tiff/%s_DJK_reverse_gray.tif',path_target, m_name{m}, m_name{m}, m_name{m}');
     filepath_out_reg_tiff = sprintf('%s%s/%s+tiff/%s_DJK_reverse_gray_reg.tif',path_target, m_name{m}, m_name{m}, m_name{m}');
     filepath_out_reg_jpg = sprintf('%s%s/%s+jpg/%s_DJK_reverse_gray_reg.jpg',path_target, m_name{m}, m_name{m}, m_name{m}');
@@ -140,7 +140,6 @@ for m = 1:n_m
 
     
     name_reverse = str;
-    
     filepath_mask_front = sprintf('%s%s_DJK_mask.tif',subpath_matlab_dir{m}, m_name{m});
     
     if ~exist(filepath_mask_front, 'file')
@@ -310,8 +309,8 @@ for m = 1:n_m
     matchedPoints1 = vpts1(indexPairs(:,1));
     matchedPoints2 = vpts2(indexPairs(:,2));
     
-      figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
-      legend('matched points 1','matched points 2');
+     % figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
+     % legend('matched points 1','matched points 2');
     
     [tform_ud,inlierPtsDistorted_ud,inlierPtsOriginal_ud] = ...
         estimateGeometricTransform(matchedPoints2,matchedPoints1,...
@@ -329,8 +328,8 @@ for m = 1:n_m
     matchedPoints1 = vpts1(indexPairs(:,1));
     matchedPoints2 = vpts2(indexPairs(:,2));
     
-      figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
-      legend('matched points 1','matched points 2');
+   %   figure; showMatchedFeatures(mask_front,mask_reverse_flip,matchedPoints1,matchedPoints2);
+   %   legend('matched points 1','matched points 2');
     
     [tform_lr,inlierPtsDistorted_lr,inlierPtsOriginal_lr] = ...
         estimateGeometricTransform(matchedPoints2,matchedPoints1,...
@@ -383,17 +382,17 @@ for m = 1:n_m
     %imwrite(mask, filepath_parchment_reverse);
     
     % Repeat with mask
-    Ir1 = Ir(:,:,1);
-    Ir2 = Ir(:,:,2);
-    Ir3 = Ir(:,:,3);
-    Ir1(~mask) = 65535;
-    Ir2(~mask) = 65535;
-    Ir3(~mask) = 65535;
-    I = cat(3,Ir1,Ir2,Ir3);
-    imwrite(I, filepath_mask_reverse_tif);
-    Jjpg = double(I)./65535;
-    Jjpg = uint8(256*Jjpg);
-    imwrite(Jjpg,filepath_reverse_mask_jpg,'jpeg','Quality', 50);
+%     Ir1 = Ir(:,:,1);
+%     Ir2 = Ir(:,:,2);
+%     Ir3 = Ir(:,:,3);
+%     Ir1(~mask) = 65535;
+%     Ir2(~mask) = 65535;
+%     Ir3(~mask) = 65535;
+%     I = cat(3,Ir1,Ir2,Ir3);
+%     imwrite(I, filepath_mask_reverse_tif);
+%     Jjpg = double(I)./65535;
+%     Jjpg = uint8(256*Jjpg);
+%     imwrite(Jjpg,filepath_reverse_mask_jpg,'jpeg','Quality', 50);
 
    % return
     %% Repeat for IR band 
